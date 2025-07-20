@@ -1,2 +1,4 @@
 # Ignore login credentials
 logins.json
+# Ignore logs
+logs.txt
