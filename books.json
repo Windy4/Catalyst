@@ -1,0 +1,14 @@
+[
+    {
+        "title": "Alice's Adventures in Wonderland",
+        "author": "Lewis Carroll",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "Frankenstein or The Modern Prometheus",
+        "author": "Mary Shelley",
+        "available": true,
+        "borrowed_by": null
+    }
+]
