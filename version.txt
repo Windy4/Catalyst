@@ -1,0 +1,27 @@
+VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers=(1, 0, 0, 0),
+    prodvers=(1, 0, 0, 0),
+    mask=0x3f,
+    flags=0x0,
+    OS=0x40004,
+    fileType=0x1,
+    subtype=0x0,
+    ),
+  kids=[
+    StringFileInfo(
+      [
+      StringTable(
+        u'040904b0',
+        [StringStruct(u'CompanyName', u'Windy Enterprise'),
+        StringStruct(u'FileDescription', u'A modern Python-powered library & book management system'),
+        StringStruct(u'FileVersion', u'1.0.0.0'),
+        StringStruct(u'InternalName', u'Catalyst'),
+        StringStruct(u'LegalCopyright', u'\xa9 2025 Windy Enterprise. All rights reserved.'),
+        StringStruct(u'OriginalFilename', u'Catalyst.exe'),
+        StringStruct(u'ProductName', u'Catalyst'),
+        StringStruct(u'ProductVersion', u'1.0.0.0')])
+      ]),
+    VarFileInfo([VarStruct(u'Translation', [1033, 1200])])
+  ]
+)
