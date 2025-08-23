@@ -1,4 +1,0 @@
-[2025-08-23 14:23:49] Signup success for user 'Owen'
-[2025-08-23 14:23:55] Login success for 'Owen'
-[2025-08-23 14:24:09] Owen checked out 'Alice's Adventures in Wonderland' to borrower '21324'
-[2025-08-23 14:24:14] Owen returned 'Alice's Adventures in Wonderland' from borrower '21324'
