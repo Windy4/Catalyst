@@ -6,8 +6,8 @@ import requests
 import tkinter as tk
 from tkinter import ttk, messagebox
 import customtkinter as ctk
-from google import genai
-from google.generative_ai import types as genai_types  # Import types for GenerateContentConfig
+import google.generativeai as genai
+from google.generativeai import types as genai_types  # Import types for GenerateContentConfig
 
 LOG_FILE = "log.txt"
 USERS_FILE = "logins.json"
@@ -137,10 +137,27 @@ class App(ctk.CTk, tk.Tk):
     def __init__(self):
         super().__init__()
         # Initialize Gemini client
+        print(os.environ)
         api_key = os.environ.get("GOOGLE_API_KEY")  # Set this in your environment
         if not api_key:
             messagebox.showerror("Configuration error", "GOOGLE_API_KEY not set in environment.")
-        self.genai_client = genai.Client(api_key=api_key)
+            print(api_key)
+        generation_config = {
+        "temperature": 0.5,
+        "top_p": 1,
+        "top_k": 1,
+        "max_output_tokens": 512,
+        }
+
+        safety_settings = [
+        {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+        {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+        {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+        {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+        ]
+        self.model = genai.GenerativeModel(model_name="gemini-1.5-pro",
+                                            generation_config=generation_config,
+                                            safety_settings=safety_settings)
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("dark-blue")
         self.title("Book Manager")
@@ -532,15 +549,14 @@ class LibraryView(ctk.CTkFrame):
 
             # Call Gemini
             # Choose a stable, available model (e.g., gemini-1.5-flash or gemini-1.5-pro)
-            response = self.controller.genai_client.responses.generate(
-                model="gemini-1.5-flash",
-                input=prompt,
-                config=genai_types.GenerateContentConfig(
-                    temperature=0.5,
-                    max_output_tokens=512,
-                    response_mime_type="application/json"
-                ),
-            )
+            prompt_parts = [prompt]
+
+            response = self.model.generate_content(prompt_parts, stream=False)
+            response.resolve()
+
+
+            # Extract text and parse JSON
+            raw_text = response.text or ""
             # Extract text and parse JSON
             raw_text = response.output_text or ""
             try:
