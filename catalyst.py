@@ -6,8 +6,9 @@ import requests
 import tkinter as tk
 from tkinter import ttk, messagebox
 import customtkinter as ctk
+from google import genai
 
-LOG_FILE = "logs.txt"
+LOG_FILE = "log.txt"
 USERS_FILE = "logins.json"
 BOOKS_FILE = "books.json"
 
@@ -42,11 +43,8 @@ def find_user_record_by_username(plain_username: str):
     users = load_users()
     for user in users:
         user_hash = user.get("user_hash", "")
-        try:
-            if plain_username:
-                return user
-        except Exception:
-            pass
+        if user_hash == plain_username:
+            return user
     return None
 
 def add_user(plain_username: str, plain_password: str):
@@ -62,6 +60,7 @@ def add_user(plain_username: str, plain_password: str):
     write_log(f"Signup success for user '{plain_username}'")
     return True, "Signup successful."
 
+# -----------------------------
 def verify_user(plain_username: str, plain_password: str):
     user_rec = find_user_record_by_username(plain_username)
     if not user_rec:
@@ -69,7 +68,7 @@ def verify_user(plain_username: str, plain_password: str):
         return False
     pass_hash = user_rec.get("pass_hash", "")
     try:
-        ok = plain_password
+        ok = bcrypt.checkpw(plain_password.encode("utf-8"), pass_hash.encode("utf-8"))
     except Exception:
         ok = False
     if ok:
@@ -152,6 +151,11 @@ class Library:
 class App(ctk.CTk, tk.Tk):
     def __init__(self):
         super().__init__()
+        # Initialize Gemini client
+        api_key = "AIzaSyBwS2PkyF-hPzW4Yj7toLbCsENZ5xM-22Y" # Set this in your environment
+        if not api_key:
+            messagebox.showerror("Configuration error", "GOOGLE_API_KEY not set in environment.")
+        self.genai_client = genai.Client(api_key=api_key)
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("dark-blue")
 
@@ -597,21 +601,59 @@ class LibraryView(ctk.CTkFrame):
     def _find_books(self, parent_win):
         genre = self.genre_var.get()
         try:
-            url = f"https://openlibrary.org/subjects/{genre}.json?limit=15"
-            response = requests.get(url, timeout=10)
-            response.raise_for_status()
-            data = response.json()
+            # Compose a strict-JSON prompt for reliable parsing
+            prompt = f"""
+    You are a helpful assistant that recommends books for a library system.
+    Given a genre, return a JSON object with an array of books, each with 'title' and 'author'.
+    Do not include any extra commentary or explanation, only valid JSON.
+
+    Genre: {genre}
+
+    Return format:
+    {{
+    "books": [
+    {{ "title": "Title 1", "author": "Author 1" }},
+    {{ "title": "Title 2", "author": "Author 2" }}
+    ]
+    }}
+    """
+
+
+            # Call Gemini
+            # Choose a stable, available model (e.g., gemini-1.5-flash or gemini-1.5-pro)
+            response = self.controller.genai_client.responses.generate(
+                model="gemini-1.5-flash",
+                input=prompt,
+                config=genai_types.GenerateContentConfig(
+                    temperature=0.5,
+                    max_output_tokens=512,
+                    response_mime_type="application/json"
+                ),
+            )
+
+            # Extract text and parse JSON
+            raw_text = response.output_text or ""
+            try:
+                data = json.loads(raw_text)
+            except json.JSONDecodeError:
+                # Attempt to salvage JSON if the model added formatting
+                # Fallback: find the first/last braces
+                start = raw_text.find("{")
+                end = raw_text.rfind("}")
+                if start != -1 and end != -1 and end > start:
+                    data = json.loads(raw_text[start:end+1])
+                else:
+                    raise
+
+            books_json = data.get("books", [])
             existing_titles = {book.title for book in self.controller.library.books}
 
             book_list = []
-            for work in data.get("works", []):
-                title = (work.get("title") or "").strip()
-                authors = work.get("authors", [])
-                if not authors:
-                    continue
-                author_name = (authors[0].get("name") or "Unknown").strip()
-                if title and title not in existing_titles:
-                    book_list.append((title, author_name))
+            for item in books_json:
+                title = (item.get("title") or "").strip()
+                author = (item.get("author") or "").strip()
+                if title and author and title not in existing_titles:
+                    book_list.append((title, author))
 
             if not book_list:
                 messagebox.showinfo("No books", "No new books found for this genre.")
@@ -622,44 +664,8 @@ class LibraryView(ctk.CTkFrame):
             self.pack(fill="both", expand=True)
 
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to fetch books: {e}")
+            messagebox.showerror("Error", f"Failed to fetch books via AI: {e}")
             self.pack(fill="both", expand=True)
-
-    def _show_genre_results(self, book_list):
-        rf = ctk.CTkToplevel(self)
-        rf.title("Select books to add")
-        rf.geometry("520x420")
-        rf.configure(fg_color=self.controller.fg_color)
-        rf.grab_set()
-
-        lbl = ctk.CTkLabel(rf, text="Select books to add:", text_color=self.controller.text_color)
-        lbl.pack(pady=(10, 6))
-
-        scroll = ctk.CTkScrollableFrame(rf, fg_color=self.controller.fg_color, width=480, height=300)
-        scroll.pack(fill="both", expand=True, padx=8, pady=8)
-
-        checks = []
-        for title, author in book_list:
-            var = tk.BooleanVar()
-            cb = ctk.CTkCheckBox(
-                scroll,
-                text=f"{title} by {author}",
-                variable=var,
-                fg_color=self.controller.accent_color,
-                hover_color=self.controller.accent_hover,
-                text_color=self.controller.text_color,
-                border_color=self.controller.accent_color,
-                corner_radius=4
-            )
-            cb.var = var
-            cb.title = title
-            cb.author = author
-            cb.pack(anchor='w', pady=2)
-            checks.append(cb)
-
-        btn_row = ctk.CTkFrame(rf, fg_color="transparent")
-        btn_row.pack(pady=10)
-
         def add_selected():
             actor = self.controller.current_user or "unknown"
             for cb in checks:
@@ -682,9 +688,6 @@ class LibraryView(ctk.CTkFrame):
         )
         cancel_btn.grid(row=0, column=1, padx=6)
 
-# -----------------------------
-# Run
-# -----------------------------
 if __name__ == "__main__":
     app = App()
     app.mainloop()
