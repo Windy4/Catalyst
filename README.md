@@ -27,11 +27,6 @@ Catalyst aims to make organizing books **simple, intuitive, and fun**.
 
 ---
 
-## 🖼️ Screenshots
-*(Add screenshots of your app here – e.g., the main menu, book list, borrow/return screen)*  
-
----
-
 ## 🛠️ Tech Stack
 - **Python 3**  
 - **Tkinter** – for the graphical interface  
