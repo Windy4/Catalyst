@@ -1,3 +1,15 @@
 [2025-08-23 15:46:55] Login failed (user not found) for 'owen'
 [2025-08-23 15:46:59] Login success for 'Owen'
 [2025-08-23 15:49:29] Login success for 'Owen'
+[2025-08-27 11:56:13] Login failed (user not found) for 'Owen'
+[2025-08-27 11:56:23] Login failed (user not found) for 'test'
+[2025-08-27 11:56:25] Login failed (user not found) for 'test'
+[2025-08-27 11:56:33] Signup success for user 'test'
+[2025-08-27 11:56:36] Login success for 'test'
+[2025-08-27 11:59:42] Login success for 'test'
+[2025-08-27 12:00:48] Login success for 'test'
+[2025-08-27 12:03:47] Login success for 'test'
+[2025-08-27 12:03:59] test added book 'Dune' by Frank Herbert
+[2025-08-27 12:03:59] test added book 'Hyperion' by Dan Simmons
+[2025-08-27 12:04:53] Login success for 'test'
+[2025-08-27 12:21:27] Login success for 'test'

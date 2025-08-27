@@ -2,3 +2,5 @@
 logins.json
 # Ignore logs
 logs.txt
+#Ignore My API key, nice try diddy
+api_key.txt

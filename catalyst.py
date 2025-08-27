@@ -136,28 +136,31 @@ class Library:
 class App(ctk.CTk, tk.Tk):
     def __init__(self):
         super().__init__()
-        # Initialize Gemini client
-        print(os.environ)
-        api_key = os.environ.get("GOOGLE_API_KEY")  # Set this in your environment
+        # --- Gemini setup ---
+        
+        api_key = os.getenv("GOOGLE_API_KEY") or self.load_api_key("api_key.txt")
         if not api_key:
             messagebox.showerror("Configuration error", "GOOGLE_API_KEY not set in environment.")
-            print(api_key)
-        generation_config = {
-        "temperature": 0.5,
-        "top_p": 1,
-        "top_k": 1,
-        "max_output_tokens": 512,
-        }
+        genai.configure(api_key=api_key)  # ← add this
 
+        generation_config = {
+            "temperature": 0.5,
+            "top_p": 1,
+            "top_k": 1,
+            "max_output_tokens": 512,
+        }
         safety_settings = [
-        {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
-        {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
-        {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
-        {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+            {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+            {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+            {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+            {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
         ]
-        self.model = genai.GenerativeModel(model_name="gemini-1.5-pro",
-                                            generation_config=generation_config,
-                                            safety_settings=safety_settings)
+        self.model = genai.GenerativeModel(
+            model_name="gemini-1.5-pro",
+            generation_config=generation_config,
+            safety_settings=safety_settings
+        )
+
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("dark-blue")
         self.title("Book Manager")
@@ -194,6 +197,9 @@ class App(ctk.CTk, tk.Tk):
         frame.tkraise()
     def set_user(self, username: str | None):
         self.current_user = username
+    def load_api_key(self, path: str) -> str:
+        with open(path, "r", encoding="utf-8") as f:
+            return f.read().strip()
 class LoginFrame(tk.Frame):
     def __init__(self, parent, controller: App):
         super().__init__(parent, bg=controller.bg_color)
@@ -532,7 +538,6 @@ class LibraryView(ctk.CTkFrame):
     def _find_books(self, parent_win):
         genre = self.genre_var.get()
         try:
-            # Compose a strict-JSON prompt for reliable parsing
             prompt = f"""
     You are a helpful assistant that recommends books for a library system.
     Given a genre, return a JSON object with an array of books, each with 'title' and 'author'.
@@ -541,46 +546,39 @@ class LibraryView(ctk.CTkFrame):
     Return format:
     {{
     "books": [
-    {{ "title": "Title 1", "author": "Author 1" }},
-    {{ "title": "Title 2", "author": "Author 2" }}
+        {{"title": "Title 1", "author": "Author 1"}},
+        {{"title": "Title 2", "author": "Author 2"}}
     ]
     }}
     """
 
-            # Call Gemini
-            # Choose a stable, available model (e.g., gemini-1.5-flash or gemini-1.5-pro)
-            prompt_parts = [prompt]
-
-            response = self.model.generate_content(prompt_parts, stream=False)
-            response.resolve()
-
-
-            # Extract text and parse JSON
-            raw_text = response.text or ""
-            # Extract text and parse JSON
-            raw_text = response.output_text or ""
+            # Use the model from the App (controller)
+            response = self.controller.model.generate_content(prompt)  # ← key change
+            raw_text = (response.text or "").strip()                   # ← no output_text, no resolve()
+            print(response)
+            # Parse JSON (with a small salvage if the model adds text around it)
             try:
                 data = json.loads(raw_text)
             except json.JSONDecodeError:
-                # Attempt to salvage JSON if the model added formatting
-                # Fallback: find the first/last braces
-                start = raw_text.find("{")
-                end = raw_text.rfind("}")
+                start, end = raw_text.find("{"), raw_text.rfind("}")
                 if start != -1 and end != -1 and end > start:
                     data = json.loads(raw_text[start:end+1])
                 else:
                     raise
+
             books_json = data.get("books", [])
-            existing_titles = {book.title for book in self.controller.library.books}
+            existing_titles = {b.title for b in self.controller.library.books}
             book_list = []
             for item in books_json:
                 title = (item.get("title") or "").strip()
                 author = (item.get("author") or "").strip()
                 if title and author and title not in existing_titles:
                     book_list.append((title, author))
+
             if not book_list:
                 messagebox.showinfo("No books", "No new books found for this genre.")
                 return
+
             parent_win.destroy()
             self._show_genre_results(book_list)
 
