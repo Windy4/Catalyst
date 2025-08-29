@@ -10,5 +10,17 @@
         "author": "Mary Shelley",
         "available": true,
         "borrowed_by": null
+    },
+    {
+        "title": "Dune",
+        "author": "Frank Herbert",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "Hyperion",
+        "author": "Dan Simmons",
+        "available": true,
+        "borrowed_by": null
     }
 ]
