@@ -10,5 +10,83 @@
         "author": "Mary Shelley",
         "available": true,
         "borrowed_by": null
+    },
+    {
+        "title": "The Wonderful Wizard of Oz",
+        "author": "L. Frank Baum",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "The Time Machine",
+        "author": "H. G. Wells",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "The Lost World",
+        "author": "Arthur Conan Doyle",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "Dracula",
+        "author": "Bram Stoker",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "Brave New World",
+        "author": "Aldous Huxley",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "The Iron Heel",
+        "author": "Jack London",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "The Invisible Man",
+        "author": "H. G. Wells",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "Flatland",
+        "author": "Edwin Abbott Abbott",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "The War of the Worlds",
+        "author": "H. G. Wells",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "The Napoleon of Notting Hill",
+        "author": "Gilbert Keith Chesterton",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "Nineteen Eighty-Four",
+        "author": "George Orwell",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "Le Tour du Monde en Quatre-Vingts Jours",
+        "author": "Jules Verne",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "The Princess and Curdie",
+        "author": "George MacDonald",
+        "available": true,
+        "borrowed_by": null
     }
 ]
