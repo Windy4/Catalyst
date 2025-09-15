@@ -70,5 +70,71 @@
         "author": "Jules Verne",
         "available": true,
         "borrowed_by": null
+    },
+    {
+        "title": "Dune",
+        "author": "Frank Herbert",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "The Martian",
+        "author": "Andy Weir",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "Foundation",
+        "author": "Isaac Asimov",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "The Left Hand of Darkness",
+        "author": "Ursula K. Le Guin",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "Neuromancer",
+        "author": "William Gibson",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "A Fire Upon the Deep",
+        "author": "Vernor Vinge",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "The Dispossessed",
+        "author": "Ursula K. Le Guin",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "Hyperion",
+        "author": "Dan Simmons",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "Ender's Game",
+        "author": "Orson Scott Card",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "The Time Machine",
+        "author": "H.G. Wells",
+        "available": true,
+        "borrowed_by": null
+    },
+    {
+        "title": "Snow Crash",
+        "author": "Neal Stephenson",
+        "available": true,
+        "borrowed_by": null
     }
 ]
