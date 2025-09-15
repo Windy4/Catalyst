@@ -14,3 +14,15 @@
 [2025-08-27 12:04:53] Login success for 'test'
 [2025-08-27 12:21:27] Login success for 'test'
 [2025-08-28 13:11:10] Login success for 'test'
+[2025-09-16 10:00:31] Login success for 'test'
+[2025-09-16 10:00:40] test added book 'Dune' by Frank Herbert
+[2025-09-16 10:01:01] test added book 'The Martian' by Andy Weir
+[2025-09-16 10:01:01] test added book 'Foundation' by Isaac Asimov
+[2025-09-16 10:01:01] test added book 'The Left Hand of Darkness' by Ursula K. Le Guin
+[2025-09-16 10:01:01] test added book 'Neuromancer' by William Gibson
+[2025-09-16 10:01:01] test added book 'A Fire Upon the Deep' by Vernor Vinge
+[2025-09-16 10:01:01] test added book 'The Dispossessed' by Ursula K. Le Guin
+[2025-09-16 10:01:01] test added book 'Hyperion' by Dan Simmons
+[2025-09-16 10:01:01] test added book 'Ender's Game' by Orson Scott Card
+[2025-09-16 10:01:01] test added book 'The Time Machine' by H.G. Wells
+[2025-09-16 10:01:09] test added book 'Snow Crash' by Neal Stephenson
