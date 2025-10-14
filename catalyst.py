@@ -1,29 +1,31 @@
-import os
+from os import path
 import json
 import time
 import bcrypt
-import requests
 import tkinter as tk
 from tkinter import ttk, messagebox
 import customtkinter as ctk
 import google.generativeai as genai
-from google.generativeai import types as genai_types  # Import types for GenerateContentConfig
+from google import genai as gnai
+from google.generativeai import types as genai_types 
 
-LOG_FILE = "log.txt"
-USERS_FILE = "logins.json"
-BOOKS_FILE = "books.json"
+ABSOLUTE_PATH = path.abspath(__file__)
+DIR_PATH = path.dirname(ABSOLUTE_PATH)
+LOG_FILE = path.join(DIR_PATH, "log.txt")
+USERS_FILE = path.join(DIR_PATH, "logins.json")
+BOOKS_FILE = path.join(DIR_PATH, "books.json")
 # -----------------------------
 # Util: logging
 # -----------------------------
 def write_log(message: str):
     ts = time.strftime("%Y-%m-%d %H:%M:%S")
-    with open(LOG_FILE, "a", encoding="utf-8") as f:
+    with open(LOG_FILE, "w", encoding="utf-8") as f:
         f.write(f"[{ts}] {message}\n")
 # -----------------------------
 # Auth storage helpers
 # -----------------------------
 def load_users():
-    if not os.path.exists(USERS_FILE):
+    if not path.exists(USERS_FILE):
         return []
     try:
         with open(USERS_FILE, "r", encoding="utf-8") as f:
@@ -95,7 +97,7 @@ class Library:
     def __init__(self):
         self.books = []
     def load_books(self):
-        if os.path.exists(BOOKS_FILE):
+        if path.exists(BOOKS_FILE):
             with open(BOOKS_FILE, 'r', encoding="utf-8") as f:
                 data = json.load(f)
                 self.books = [Book(**book) for book in data]
@@ -138,10 +140,10 @@ class App(ctk.CTk, tk.Tk):
         super().__init__()
         # --- Gemini setup ---
         
-        api_key = os.getenv("GOOGLE_API_KEY") or self.load_api_key("api_key.txt")
+        api_key = 'AIzaSyBwS2PkyF-hPzW4Yj7toLbCsENZ5xM-22Y'
         if not api_key:
             messagebox.showerror("Configuration error", "GOOGLE_API_KEY not set in environment.")
-        genai.configure(api_key=api_key)  # ← add this
+        genai.configure(api_key=api_key)  
 
         generation_config = {
             "temperature": 0.5,
@@ -156,7 +158,7 @@ class App(ctk.CTk, tk.Tk):
             {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
         ]
         self.model = genai.GenerativeModel(
-            model_name="gemini-1.5-pro",
+            model_name="gemini-2.0-flash",
             generation_config=generation_config,
             safety_settings=safety_settings
         )
@@ -504,7 +506,7 @@ class LibraryView(ctk.CTkFrame):
         # Replace main view with genre search
         self._show_genre_frame()
     def _show_genre_frame(self):
-        # Create a temporary toplevel genre window to keep things simpler
+        # Create a temporary toplevel genre window
         gf = ctk.CTkToplevel(self)
         gf.title("Find Books by Genre")
         gf.geometry("420x240")
@@ -540,7 +542,7 @@ class LibraryView(ctk.CTkFrame):
         try:
             prompt = f"""
     You are a helpful assistant that recommends books for a library system.
-    Given a genre, return a JSON object with an array of books, each with 'title' and 'author'.
+    Given a genre, return a JSON object with an array of 9 books, each with 'title' and 'author'.
     Do not include any extra commentary or explanation, only valid JSON.
     Genre: {genre}
     Return format:
@@ -553,8 +555,9 @@ class LibraryView(ctk.CTkFrame):
     """
 
             # Use the model from the App (controller)
-            response = self.controller.model.generate_content(prompt)  # ← key change
-            raw_text = (response.text or "").strip()                   # ← no output_text, no resolve()
+            client = gnai.Client(api_key="AIzaSyBwS2PkyF-hPzW4Yj7toLbCsENZ5xM-22Y")
+            response = client.models.generate_content(model="gemini-2.0-flash", contents=prompt)
+            raw_text = (response.text or "").strip()               
             print(response)
             # Parse JSON (with a small salvage if the model adds text around it)
             try:
@@ -626,6 +629,6 @@ class LibraryView(ctk.CTkFrame):
         )
         cancel_btn.grid(row=0, column=1, padx=6)
 
-if __name__ == "__main__":
-    app = App()
-    app.mainloop()
+
+app = App()
+app.mainloop()
