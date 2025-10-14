@@ -29,9 +29,11 @@ Catalyst aims to make organizing books **simple, intuitive, and fun**.
 
 ## 🛠️ Tech Stack
 - **Python 3**  
-- **Tkinter** – for the graphical interface  
-- **JSON** – for storing books and users  
-- *(Optional)* `requests` – if using online book APIs for suggestions  
+- **Tkinter** - For the graphical interface
+- **Custom Tkinter** - For Better GUI
+- **JSON** - For storing books and users  
+- **Google-Genai** - For Book requests
+- **Bcrypt** - For Security Encryption
 
 ---
 
@@ -41,6 +43,14 @@ Catalyst aims to make organizing books **simple, intuitive, and fun**.
    bash
    git clone https://github.com/yourusername/catalyst.git
    cd catalyst
+
+2. **Install Dependancies**
+   ```
+   pip install bcrypt
+   pip install customtkinter
+   pip install tkinter
+   pip install google-genai
+
 Run the app
 
 python catalyst.py
